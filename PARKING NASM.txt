@@ -1,0 +1,328 @@
+section .data
+    intro db 'PARKING MANAGEMENT SYSTEM',10,'Programmer: BASIL XAVIER MENDOZA',10,'Date Programmed: 2023-12-22'
+    introl equ $-intro
+    menu db 10,10,'===PARKING MANAGEMENT SYSTEM==='
+            db 10,'(Parking Fee: P30 per hour)'
+            db 10,' 1. Display Vacant Slots'
+            db 10,' 2. Park a Car'
+            db 10,' 3. Open Slot'
+            db 10,' 4. Exit Program'
+            db 10,'Enter Choice: '
+    menul equ $-menu
+    nvld db 10,'ERROR: Invalid choice!'
+    nvldl equ $-nvld
+    exit db 10,10,'Thank you for using our Parking Management System. Have a great Day!'
+    exitl equ $-exit
+    slot db 10,'SLOT#'
+    slotl equ $-slot
+    vcnt db 9,': ----VACANT---'
+    vcntl equ $-vcnt 
+    occu db 9,': [==OCCUPIED=]'
+    occul equ $-occu
+    prks db 'Enter slot to park in: '
+    prksl equ $-prks
+    hour db 'Enter hours to park: '
+    hourl equ $-hour
+    succ db 10,'>Successfully parked in parking slot.'
+    succl equ $-succ
+    pkoc db 'Parking slot is already occupied',10
+    pkocl equ $-pkoc
+    hrnv db 'Invalid hours.',10
+    hrnvl equ $-hrnv
+    full db 'PARKING IS FULL',10
+    fulll equ $-full
+    sltn db 'Invalid slot.',10
+    sltnl equ $-sltn
+    wich db 'Input slot to open: '
+    wichl equ $-wich
+    opvc db 'Slot is vacant.',10
+    opvcl equ $-opvc
+    emty db 'Parking lot is empty.',10
+    emtyl equ $-emty
+    free db '>Successfully freed parking slot. Total: P'
+    freel equ $-free
+
+
+section .bss
+    choice resb 4
+    inpt resb 16
+    buffer resd 16
+    ps00 resb 16
+    ps01 resb 16
+    ps02 resb 16
+    ps03 resb 16
+    ps04 resb 16
+    ps05 resb 16
+    ps06 resb 16
+    ps07 resb 16
+    ps08 resb 16
+    ps09 resb 16
+    ps10 resb 16
+section .text
+    global _start
+_start:
+    call initialize
+    mov ecx, intro 
+    mov edx, introl 
+    call print
+PRINTMENU:
+    mov ecx, menu 
+    mov edx, menul 
+    call print
+    mov ecx,choice
+    mov edx,1
+    call input
+    mov eax,[choice]
+    cmp eax,'1'
+    je DISPLAY
+    cmp eax,'2'
+    je PARK
+    cmp eax,'3'
+    je OPEN
+    cmp eax,'4'
+    je EXITPROGRAM
+    mov ecx,nvld
+    mov edx,nvldl
+    call print
+    call clear
+    jmp PRINTMENU
+DISPLAY:
+    call clear 
+    mov ecx,10
+    DISPLAYLOOP:
+        mov ebx, ecx
+        push ecx
+        push ebx
+        mov ecx, slot 
+        mov edx, slotl 
+        call print
+        pop ebx
+        mov eax, 11
+        sub eax, ebx
+        mov ebx,eax 
+        push ebx
+        call print_num
+        pop ebx 
+        mov eax,ebx 
+        call get_hours
+        cmp eax,0
+        jne OCCUPIED
+            mov ecx, vcnt 
+            mov edx, vcntl 
+            call print
+            jmp DISPLAYAFTER
+        OCCUPIED:
+            mov ecx, occu 
+            mov edx, occul 
+            call print
+        DISPLAYAFTER:
+        pop ecx 
+        loop DISPLAYLOOP
+    jmp PRINTMENU
+PARK:
+    call clear
+    mov eax, [ps00]
+    cmp eax, 10
+    je PARKFULL
+    PARKREASK:
+    mov ecx, prks 
+    mov edx, prksl 
+    call print 
+    mov ecx,inpt 
+    mov edx,16
+    call input
+    lea esi, [inpt]
+    xor eax,eax 
+    call to_int
+    mov ecx,eax
+    call check_slot
+    cmp eax, 255
+    je PARKREASK
+    mov eax,ecx
+    call get_hours
+    cmp eax, 0
+    je VACANT
+    mov ecx, pkoc
+    mov edx, pkocl 
+    call print 
+    jmp PARKREASK
+    VACANT:
+    mov eax,ecx
+    push eax 
+    PARKREHOURS:
+    mov ecx, hour 
+    mov edx, hourl 
+    call print 
+    mov ecx,inpt 
+    mov edx,16
+    call input
+    lea esi, [inpt]
+    xor eax,eax 
+    call to_int
+
+    mov ebx,eax
+    cmp ebx, 1
+    jl PARKHOURS
+    pop eax
+    call set_hours
+    mov eax, [ps00]
+    inc eax 
+    mov [ps00],eax
+    jmp PRINTMENU
+    PARKFULL:
+        mov ecx, full
+        mov edx, fulll
+        call print
+        jmp PRINTMENU
+    PARKHOURS:
+        mov ecx, hrnv
+        mov edx, hrnvl
+        call print
+        jmp PARKREHOURS
+OPEN:
+    call clear 
+    mov eax, [ps00]
+    cmp eax, 1
+    jl EMPTY
+    OPENREASK:
+    mov ecx, wich
+    mov edx, wichl 
+    call print 
+    mov ecx,inpt 
+    mov edx,16
+    call input
+    lea esi, [inpt]
+    xor eax,eax 
+    call to_int
+    mov ecx,eax
+    call check_slot
+    cmp eax, 255
+    je OPENREASK
+    mov eax,ecx 
+    call get_hours
+    cmp eax,0
+    je OPENVACANT
+    push eax
+    mov eax,ecx
+    mov ebx,0
+    call set_hours
+    mov eax, [ps00]
+    dec eax 
+    mov [ps00],eax
+    mov ecx,free
+    mov edx,freel 
+    call print
+    pop eax 
+    imul eax,30
+    call print_num
+    jmp PRINTMENU
+    EMPTY:
+        mov ecx, emty
+        mov edx, emtyl 
+        call print
+        jmp PRINTMENU
+    OPENVACANT: 
+        mov ecx,opvc 
+        mov edx,opvcl 
+        call print
+        jmp OPENREASK
+
+EXITPROGRAM:
+    mov ecx,exit 
+    mov edx,exitl 
+    call print
+    mov eax,1 
+    mov ebx,0
+    int 80h
+check_slot: ;input eax 
+    cmp eax,1
+    jl CHECKINVALID
+    cmp eax,10
+    jg CHECKINVALID
+    ret
+    CHECKINVALID:
+        mov ecx, sltn
+        mov edx, sltnl
+        call print 
+        mov eax,255
+        ret
+set_hours: ;input eax, ebx
+    imul eax,16
+    mov [ps00+eax],ebx
+    ret
+get_hours: ;input eax, output eax
+    mov ebx, eax
+    imul ebx,16
+    mov eax, [ps00+ebx]
+    ret
+print:
+    mov eax,4
+    mov ebx,1
+    int 80h
+    ret
+clear:
+    mov ecx,choice 
+    mov edx,1
+input:
+    mov eax,3
+    mov ebx,0
+    int 80h
+    ret
+return:
+    ret
+initialize:
+    mov eax,0
+    mov [ps00], eax
+    mov eax,0
+    mov [ps01], eax
+    mov eax,0
+    mov [ps02], eax
+    mov eax,0
+    mov [ps03], eax
+    mov eax,0
+    mov [ps04], eax
+    mov eax,0
+    mov [ps05], eax
+    mov eax,0
+    mov [ps06], eax
+    mov eax,0
+    mov [ps07], eax
+    mov eax,0
+    mov [ps08], eax
+    mov eax,0
+    mov [ps09], eax
+    mov eax,0
+    mov [ps10], eax
+    ret
+to_int: ;input: lea esi, [input] ,,, xor eax,eax
+    movzx edx, byte[esi]
+    cmp edx,10
+    je return 
+    sub edx,'0'
+    imul eax,10
+    add eax,edx 
+    inc esi 
+    jmp to_int 
+
+to_string: ;input eax ;lea ecx,[buffer + 15]
+    xor edx,edx 
+    mov ebx,10
+    div ebx 
+    add edx,'0'
+    mov [ecx],dl 
+    
+    dec ecx
+    test eax,eax 
+    jnz to_string 
+    inc ecx
+    ret
+print_num: ;input eax
+    lea ecx,[buffer + 15]
+    call to_string
+    mov eax,4
+    mov ebx,1
+    mov edx,buffer
+    add edx,16
+    sub edx,ecx 
+    int 80h
+    ret

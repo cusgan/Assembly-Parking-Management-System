@@ -1,0 +1,77 @@
+; Opening Screen
+                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    $
+
+    Welcome to CIT-U Car Parking Slot Management System!                        $
+    You must log in to use the service.                                         $
+
+    Choose from the options below:                                              $
+        1. Register Account                                                     $
+        2. Log In Account                                                       $
+        3. Close Program                                                        $
+    Your choice: $
+
+
+; Register New Customer
+                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    
+                              REGISTER NEW ACCOUNT                              
+
+    Please enter the necessary details to register an account.
+        Username: 
+        First Name: 
+        Last Name: 
+        Birth Year: ; if not 18+ do not register
+        Password: 
+
+    Registering Account
+        Username: ...
+        First Name: ...
+        Last Name: ...
+        Birth Year: ...
+        Password: ; hashed
+    Confirm Account Details [Y/N]: 
+
+    You have successfully registered!
+    Return to opening screen? [Y/N]: 
+
+
+; Log In Account
+                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    
+                                     LOG IN                                     
+
+    Please enter the necessary details to log into your account.
+        Username: 
+        Password: 
+    Error: Password does not match!
+    Successfully logged in!
+
+; Main Menu
+                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    
+                                   MAIN MENU                                    $
+
+    Hello, Firstname Lastname!                                                  $
+    What would you like to do today?                                            $
+        1. See Parking Slot Availability                                        $
+        2. Park My Car                                                          $
+        3. Open a Parking Slot                                                  $
+        4. Close Program                                                        $
+    Your choice: 
+
+; See Vacant Parking Slots
+                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    
+                           PARKING SLOT AVAILABILITY                            $
+    
+    No. of Available Parking Slots:     08                                      $
+    No. of Unavailable Parking Slots:   08                                      $
+    Total No. of Parking Slots:         16                                      $
+
+    [ 01 ] Available                    [ 02 ] Not Available                    $
+    [ 03 ] Not Available                [ 04 ] Available                        $
+    [ 05 ] Available                    [ 06 ] Not Available                    $
+    [ 07 ] Not Available                [ 08 ] Available                        $
+    [ 09 ] Available                    [ 10 ] Not Available                    $
+    [ 11 ] Not Available                [ 12 ] Available                        $
+    [ 13 ] Available                    [ 14 ] Not Available                    $
+    [ 15 ] Not Available                [ 16 ] Available                        $
+
+
+    Return to main menu? [Y/N]: 

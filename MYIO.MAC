@@ -1,0 +1,36 @@
+Print   MACRO   string
+        
+        push    AX
+        mov     AX, OFFSET string
+        MOV AH, 09H
+        LEA DX, string
+        INT 21H
+        pop     AX
+
+        ENDM
+
+Color   MACRO   clr, numchar
+
+        MOV AH, 09H
+        MOV BL, clr
+        MOV CX, numchar
+        INT 10H
+
+        ENDM
+
+nwln    MACRO
+
+        MOV AH, 02H
+        MOV CL, 0AH ; NEWLINE
+        MOV DL, CL
+        INT 21H
+
+        ENDM
+
+space   MACRO spacecount
+        REPT spacecount
+            MOV DL, ' '  ; Load the character to print
+            MOV AH, 02H   ; DOS function to print a character
+            INT 21H       ; Print the character
+            ENDM
+        ENDM
