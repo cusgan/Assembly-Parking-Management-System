@@ -1,9 +1,9 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 00340H 00341H _TEXT              CODE
- 00350H 009FAH 006ABH _DATA              DATA
- 00A00H 00A63H 00064H STACK              STACK
+ 00000H 018D8H 018D9H _TEXT              CODE
+ 018E0H 02202H 00923H _DATA              DATA
+ 02210H 02273H 00064H STACK              STACK
 
   Address         Publics by Name
 
@@ -11,5 +11,5 @@
   Address         Publics by Value
 
 
-Program entry point at 0000:0330
+Program entry point at 0000:18C8
 

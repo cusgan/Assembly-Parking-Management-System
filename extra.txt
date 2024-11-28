@@ -1,0 +1,92 @@
+; ALT RED BACKGROUND DATA
+    althead     DB '        ____ ___ _____     _   _   ____   _    ____  _  _____ _   _  ____       $'
+    althead1    DB '       / ___|_ _|_   _|   | | | | |  _ \ / \  |  _ \| |/ /_ _| \ | |/ ___|      $'
+    althead2    DB '      | |    | |  | |_____| | | | | |_) / _ \ | |_) | ',39,' / | ||  \| | |  _       $'
+    althead3    DB '      | |___ | |  | |_____| |_| | |  __/ ___ \|  _ <| . \ | || |\  | |_| |      $'
+    althead4    DB '       \____|___| |_|_ ____\___/__|_| /_/___\_\_|_\_\_|\_\___|_|_\_|\____|      $'
+    althead5    DB '          / ___|| |   / _ \_   _| / ___\ \ / / ___|_   _| ____|  \/  |          $'
+    althead6    DB '          \___ \| |  | | | || |   \___ \\ V /\___ \ | | |  _| | |\/| |          $'
+    althead7    DB '           ___) | |__| |_| || |    ___) || |  ___) || | | |___| |  | |          $'
+    althead8    DB '          |____/|_____\___/ |_|   |____/ |_| |____/ |_| |_____|_|  |_|          $'
+
+; ALT RED BACKGROUND HEADER
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead   
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead1
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead2
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead3
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead4
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead5
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead6
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead7
+        INT 21H
+        
+        MOV AH, 09H
+        MOV BL, 4FH     ; BG FG
+        MOV CX, 80      ; NO. OF CHARS TO CHANGE
+        INT 10H
+
+        MOV AH, 09H
+        LEA DX, althead8
+        INT 21H

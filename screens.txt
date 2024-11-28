@@ -17,17 +17,14 @@
 
     Please enter the necessary details to register an account.
         Username: 
-        First Name: 
-        Last Name: 
-        Birth Year: ; if not 18+ do not register
         Password: 
+        Birth Year: ; if <18 do not register
 
     Registering Account
         Username: ...
-        First Name: ...
-        Last Name: ...
-        Birth Year: ...
-        Password: ; hashed
+        Password: ; hashed?
+        Birth Year: ; if <18 do not register
+
     Confirm Account Details [Y/N]: 
 
     You have successfully registered!

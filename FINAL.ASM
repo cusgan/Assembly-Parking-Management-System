@@ -10,13 +10,28 @@
 .STACK 100
 .DATA
     head        DB '                    CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM                    $'
+    head1       DB '                   Programmed by FELISA MELANIE FAY G. BASCUG                   $'
+    head2       DB '                          Completed ???ember ??, 2024                           $'
 
     open1       DB '    Welcome to CIT-U Car Parking Slot Management System!                        $'
     open2       DB '    You must log in to use the service.                                         $'
-    open3       DB '    Choose from the options below:                                              $'
+;   open3       DB '    CHOOSE FROM THE OPTIONS BELOW:                                              $'
+    open3       DB ' CHOOSE FROM THE OPTIONS BELOW: $' ; 30 characters
     open4       DB '        1. Register Account                                                     $'
     open5       DB '        2. Log In Account                                                       $'
     open6       DB '        3. Close Program                                                        $'
+
+    subregis    DB '                              REGISTER NEW ACCOUNT                              $'
+    regis1      DB '    Please enter the necessary details to register an account.                  $'
+    regis2      DB '        Username: $'
+    regis3      DB '        Password: $'
+    regis4      DB '        Birth Year: $'
+    regis5      DB '    REGISTERING ACCOUNT                                                         $'
+    regis6      DB '    Confirm Account Details [Y/N]: $'
+    regis7      DB '    You have successfully registered!                                           $'
+    regis8      DB '    Return to opening screen? [Y/N]: $'
+    regiserror1 DB '    ERROR: $' ; 11 characters
+    regiserror2 DB 'Only legally driving adults (18+) can register.$' ; 47 characters
 
     submenu     DB '                                   MAIN MENU                                    $'
     menu1       DB '    Hello, Firstname Lastname!                                                  $'
@@ -39,11 +54,13 @@
     indent      DB '    $'
     returnmenu  DB '    Return to main menu? [Y/N]: $'
     empty       DB '                                                                                $'
-    choice      DB '    Your choice: $'
+    choice      DB '    Your choice: $' ; 18 characters
+	inputChoice DB ?    ; variable to store the input character
 
 
 .CODE
 INCLUDE MYIO.MAC
+
 ; CLEAR THE SCREEN
 CLEAR_SCREEN PROC FAR
     MOV AH, 02H
@@ -65,122 +82,117 @@ CLEAR_SCREEN PROC FAR
 RETF
 CLEAR_SCREEN ENDP
 
+; PRINT CIT-U CAR PARKING SLOT MANAGEMENT SYSTEM
+PRINT_CITU PROC FAR
+    Color 4FH, 80
+    space 80
+
+    Color 4FH, 80
+    Print head
+RETF
+PRINT_CITU ENDP
+
 ; 1. OPENING SCREEN
 OPENING_SCREEN PROC FAR
-    MOV AH, 09H
-    MOV BL, 4FH     ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
+    ; RED BACKGROUND HEADER
+        CALL PRINT_CITU
 
-    MOV AH, 09H
-    LEA DX, head    ; CITU PARKING SLOT MANAGEMENT SYSTEM
-    INT 21H
+        Color 4EH, 80
+        Print head1
 
-    MOV AH, 09H
-    MOV BL, 70H     ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
+        Color 4EH, 80
+        Print head2
 
-    MOV AH, 09H
-    LEA DX, empty
-    INT 21H
+        Color 4FH, 80
+        space 80
 
-    MOV AH, 09H
-    MOV BL, 70H     ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
+    Color 70H, 80
+    space 80
+
+    Color 70H, 80
+    Print open1     ; Welcome to CIT-U Car Parking Slot Management System!
+    Color 70H, 80
+    Print open2     ; You must log in to use the service.
+
+    Color 70H, 80
+    space 80
+
+    Color 74H, 4
+    Print indent
+    Color 4FH, 32
+    Print open3     ; CHOOSE FROM THE OPTIONS BELOW:
+    Color 70H, 44
+    space 44
     
-    MOV AH, 09H
-    LEA DX, open1
+    Color 70H, 80
+    Print open4     ; 1. Register Account
+    Color 70H, 80
+    Print open5     ; 2. Log In Account
+    Color 70H, 80
+    Print open6     ; 3. Close Program
+
+    Color 70H, 80
+    space 80
+    nwln
+
+    Color 0EH, 17
+    Print choice
+
+    MOV AH, 01H
     INT 21H
+    MOV inputChoice, AL
 
-    MOV AH, 09H
-    MOV BL, 70H     ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
-    
-    MOV AH, 09H
-    LEA DX, open2
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 70H         ; BG FG
-    MOV CX, 80          ; NO. OF CHARS TO CHANGE
-    INT 10H
-
-    MOV AH, 09H
-    LEA DX, empty
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 11110100B   ; 1 BLINK BIT + 3 BG BITS + 4 FG BITS
-    MOV CX, 80          ; NO. OF CHARS TO CHANGE
-    INT 10H
-        
-    MOV AH, 09H
-    LEA DX, open3
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 70H         ; BG FG
-    MOV CX, 80          ; NO. OF CHARS TO CHANGE
-    INT 10H
-    
-    MOV AH, 09H
-    LEA DX, open4
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 70H         ; BG FG
-    MOV CX, 80          ; NO. OF CHARS TO CHANGE
-    INT 10H
-    
-    MOV AH, 09H
-    LEA DX, open5
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 70H        ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
-    
-    MOV AH, 09H
-    LEA DX, open6
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 70H     ; BG FG
-    MOV CX, 80      ; NO. OF CHARS TO CHANGE
-    INT 10H
-
-    MOV AH, 09H
-    LEA DX, empty
-    INT 21H
-
-    MOV AH,02H
-    MOV CL,0AH      ; NEWLINE
-    MOV DL,CL
-    INT 21H
-
-    MOV AH, 09H
-    MOV BL, 0EH     ; BG FG
-    MOV CX, 17      ; NO. OF CHARS TO CHANGE
-    INT 10H
-    
-    MOV AH, 09H
-    LEA DX, choice
-    INT 21H
-    
-    MOV AH,02H
-    MOV CL,0AH      ; NEWLINE
-    MOV DL,CL
-    INT 21H
-
+    nwln
 RETF 
 OPENING_SCREEN ENDP
     
 ; 2. REGISTER NEW CUSTOMER
 REGISTER PROC FAR
+    CALL PRINT_CITU
+    Color 4EH, 80
+    Print subregis
+    Color 4EH, 80
+    space 80 
+
+    Color 70H, 80
+    space 80 
+    Color 70H, 80
+    Print regis1        ; Please enter the necessary details to register an account.
+    Color 70H, 80
+    space 80 
+
+    space 80
+    Color 0FH, 17
+    Print regis2        ; Username: 
+    nwln
+    Color 0FH, 17
+    Print regis3        ; Password:
+    nwln
+    Color 0FH, 19
+    Print regis4        ; Birth Year:
+    nwln
+
+    nwln
+    Color 10000100B, 10
+    Print regiserror1    ; ERROR: 
+    Color 10001111B, 47
+    Print regiserror2    ; Only legally driving adults (18+) can register.
+    nwln
+
+    nwln
+    Color 70H, 80
+    space 80
+    Color 70H, 80 
+    Print regis5
+    Color 70H, 80 
+    Print regis2
+    nwln
+    Color 70H, 80 
+    Print regis3
+    nwln
+    Color 70H, 80 
+    Print regis4
+    nwln
 
 RETF
 REGISTER ENDP
@@ -391,7 +403,7 @@ MAIN PROC
     MOV DS, AX
 
     CALL CLEAR_SCREEN
-    CALL SLOT_AVAILABILITY
+    CALL REGISTER
 
     MOV AH, 4CH
     INT 21H
