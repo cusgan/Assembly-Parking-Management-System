@@ -26,7 +26,8 @@
     regis2      DB '        Username: $'
     regis3      DB '        Password: $'
     regis4      DB '        Birth Year: $'
-    regis5      DB '    REGISTERING ACCOUNT                                                         $'
+;   regis5      DB '    REGISTERING ACCOUNT                                                         $'
+    regis5      DB ' REGISTERING ACCOUNT $' ; 21 characters
     regis6      DB '    Confirm Account Details [Y/N]: $'
     regis7      DB '    You have successfully registered!                                           $'
     regis8      DB '    Return to opening screen? [Y/N]: $'
@@ -182,8 +183,12 @@ REGISTER PROC FAR
     nwln
     Color 70H, 80
     space 80
-    Color 70H, 80 
+    Color 70H, 4
+    space 4
+    Color 4EH, 21
     Print regis5
+    Color 70H, 55
+    space 55
     Color 70H, 80 
     Print regis2
     nwln
