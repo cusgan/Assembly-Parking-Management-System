@@ -34,3 +34,83 @@ space   MACRO spacecount
             INT 21H       ; Print the character
             ENDM
         ENDM
+; CLEAR THE SCREEN
+CLEAR_SCREEN PROC FAR
+    MOV AH, 02H
+    MOV BH, 0
+    MOV DH, 0
+    MOV DL, 0
+    INT 10H
+
+    MOV CX, 2000
+    MOV AH, 09H 
+    MOV AL, 20H
+    MOV BH, 0
+    MOV BL, 07H
+
+    WRITE_SPACES:
+    INT 10H         ; WRITE THE SPACE TO THE SCREEN
+    LOOP WRITE_SPACES
+
+RETF
+CLEAR_SCREEN ENDP
+
+utilprocs MACRO
+        str2int proc far
+        mov ax, 0
+        str2intloop:
+                mov cl, [si]
+                cmp cl, '$'
+                je str2intend
+                sub cl, '0'
+                mov bx, 10
+                mul bx
+                add ax, cx
+                inc si
+                jmp str2intloop
+        str2intend:
+                retf
+        str2int endp
+        string_input proc far
+        mov ah, 0Ah
+        mov dx, offset inbf
+        int 21h
+        cld
+        mov si, offset inbf + 1
+        mov cl, [ si ]
+        mov ch, 0
+        inc cx
+        add si, cx
+        mov al, '$'
+        mov [ si ], al
+        mov ax, offset inbf
+        lea si, inbf
+        add si, 2
+        si_copy_loop:
+                mov al, [si]
+                mov [di], al
+                inc si
+                inc di
+                cmp al, '$'
+                jnz si_copy_loop
+        retf
+        string_input endp
+        print_num proc far
+        xor cx, cx
+        mov bx, 10
+        pr_i_count:
+                xor dx, dx
+                div bx
+                push dx
+                inc cx
+                test ax, ax
+                jnz pr_i_count
+        pr_i_print:
+                pop dx
+                add dl, '0'
+                mov ah, 02h
+                int 21h
+                loop pr_i_print
+        retf
+        print_num endp
+        ENDM
