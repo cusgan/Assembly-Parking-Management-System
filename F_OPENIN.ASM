@@ -56,17 +56,16 @@ OPENING_SCREEN PROC FAR
     JMP OPENING_SCREEN_END
     OPENING_CHOICE_1:
         CALL CLEAR_SCREEN
-        CALL REGISTER
+        MOV next_screen, 2 ; register
         JMP OPENING_SCREEN_END
     OPENING_CHOICE_2:
         CALL CLEAR_SCREEN
-        CALL LOG_IN
+        MOV next_screen, 3 ; log in
         JMP OPENING_SCREEN_END
     OPENING_CHOICE_3:
         CALL CLEAR_SCREEN
-        CALL MAIN_MENU
+        MOV next_screen, 4 ; main menu
         JMP OPENING_SCREEN_END
     OPENING_SCREEN_END:
-    nwln
 RETF 
 OPENING_SCREEN ENDP

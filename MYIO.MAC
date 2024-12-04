@@ -1,15 +1,19 @@
+
+
 Print   MACRO   string
-        
-        push    AX
         mov     AX, OFFSET string
         MOV AH, 09H
         LEA DX, string
         INT 21H
-        pop     AX
 
         ENDM
+PrintChar MACRO char
+        MOV AH, 02H
+        MOV DL, char
+        INT 21H
+        ENDM
 
-Color   MACRO   clr, numchar
+Color   MACRO   clr, numchar    ; colorcode, num of chars to change color
 
         MOV AH, 09H
         MOV BL, clr
@@ -19,12 +23,10 @@ Color   MACRO   clr, numchar
         ENDM
 
 nwln    MACRO
-
         MOV AH, 02H
         MOV CL, 0AH ; NEWLINE
         MOV DL, CL
         INT 21H
-
         ENDM
 
 space   MACRO spacecount
@@ -34,6 +36,81 @@ space   MACRO spacecount
             INT 21H       ; Print the character
             ENDM
         ENDM
+
+InputStr MACRO str         ; str = where to store string to 
+        lea di, str
+        call string_input 
+        ENDM       
+
+PrintNum MACRO num         ; num = number to print
+        IFDIFI  <num>,<AX>
+                mov ax, num
+        ENDIF
+        call print_num
+        ENDM
+StrictNum MACRO num, len
+        IFDIFI  <num>,<AX>
+                mov ax, num
+        ENDIF
+        IFDIFI  <len>,<DX>
+                mov Dx, len
+        ENDIF
+        call strict_num_proc
+        ENDM 
+StrToInt MACRO str          ; str = string to convert to number
+        lea si, str
+        call str2int
+        ENDM
+
+InputNum MACRO target       ; target = where to store number to
+        lea di, buffer0
+        call string_input 
+
+        IFDIFI  <target>,<AX>
+                push  AX
+                lea si, buffer0
+                call str2int
+                mov   target,AX
+                pop   AX
+                EXITM
+        ENDIF
+        lea si, buffer0
+        call str2int
+        ENDM
+
+LenStr MACRO str, target        ;input str, output num
+        push cx 
+        push ax
+        lea si, str
+        xor cx, cx
+
+        len_str_count_loop:
+        mov al, [si]
+        cmp al, '$'
+        je len_str_end_loop
+        inc cx
+        inc si 
+        jmp len_str_count_loop 
+
+        len_str_end_loop:
+        IFDIFI  <target>,<AX>
+                mov target, cx
+                pop cx
+                pop ax
+                EXITM
+        ENDIF
+        pop ax
+        mov ax, cx
+        pop CX
+        ENDM
+
+StrictPrint MACRO str, len      ; str = input string, len = constant length to print
+        lea si, str
+        mov dx, len
+        call strict_print_proc
+        
+        ENDM
+
 ; CLEAR THE SCREEN
 CLEAR_SCREEN PROC FAR
     MOV AH, 02H
@@ -55,62 +132,151 @@ CLEAR_SCREEN PROC FAR
 RETF
 CLEAR_SCREEN ENDP
 
-utilprocs MACRO
+
+
+
+
+;UTILITY PROCS
         str2int proc far
-        mov ax, 0
-        str2intloop:
-                mov cl, [si]
-                cmp cl, '$'
-                je str2intend
-                sub cl, '0'
-                mov bx, 10
-                mul bx
-                add ax, cx
-                inc si
-                jmp str2intloop
-        str2intend:
-                retf
-        str2int endp
+                mov ax, 0
+                str2intloop:
+                        mov cl, [si]
+                        cmp cl, '$'
+                        je str2intend
+                        sub cl, '0'
+                        mov bx, 10
+                        mul bx
+                        add ax, cx
+                        inc si
+                        jmp str2intloop
+                str2intend:
+                        retf
+                str2int endp
+
         string_input proc far
-        mov ah, 0Ah
-        mov dx, offset inbf
-        int 21h
-        cld
-        mov si, offset inbf + 1
-        mov cl, [ si ]
-        mov ch, 0
-        inc cx
-        add si, cx
-        mov al, '$'
-        mov [ si ], al
-        mov ax, offset inbf
-        lea si, inbf
-        add si, 2
-        si_copy_loop:
-                mov al, [si]
-                mov [di], al
-                inc si
-                inc di
-                cmp al, '$'
-                jnz si_copy_loop
-        retf
-        string_input endp
-        print_num proc far
-        xor cx, cx
-        mov bx, 10
-        pr_i_count:
-                xor dx, dx
-                div bx
-                push dx
-                inc cx
-                test ax, ax
-                jnz pr_i_count
-        pr_i_print:
-                pop dx
-                add dl, '0'
-                mov ah, 02h
+                mov ah, 0Ah
+                mov dx, offset inbf
                 int 21h
-                loop pr_i_print
-        retf
-        print_num endp
+                cld
+                mov si, offset inbf + 1
+                mov cl, [ si ]
+                mov ch, 0
+                inc cx
+                add si, cx
+                mov al, '$'
+                mov [ si ], al
+                mov ax, offset inbf
+                lea si, inbf
+                add si, 2
+                si_copy_loop:
+                        mov al, [si]
+                        mov [di], al
+                        inc si
+                        inc di
+                        cmp al, '$'
+                        jnz si_copy_loop
+                retf
+                string_input endp
+
+        print_num proc far
+                xor cx, cx
+                mov bx, 10
+                pr_i_count:
+                        xor dx, dx
+                        div bx
+                        push dx
+                        inc cx
+                        test ax, ax
+                        jnz pr_i_count
+                pr_i_print:
+                        pop dx
+                        add dl, '0'
+                        mov ah, 02h
+                        int 21h
+                        loop pr_i_print
+                retf
+                print_num endp
+
+        strict_num_proc proc far
+                xor cx, cx
+                mov bx, 10
+                mov bufferN, dx
+                spr_i_count:
+                        xor dx, dx
+                        div bx
+                        push dx
+                        inc cx
+                        test ax, ax
+                        jnz spr_i_count
+                spr_i_print:
+                        pop dx
+                        add dl, '0'
+                        mov ah, 02h
+                        int 21h
+                        push ax
+                        mov ax, bufferN
+                        dec ax
+                        mov bufferN, ax
+                        pop ax
+                        loop spr_i_print
+                mov dx, bufferN
+                nstrict_end_loop:
+                        CMP DX, 0
+                        JLE nstrict_end
+                        PUSH DX
+                        MOV DL, ' '
+                        MOV AH, 02H
+                        INT 21H
+                        POP DX
+                        DEC DX
+                        JMP nstrict_end_loop
+                nstrict_end:
+                retf
+                strict_num_proc endp
+
+        strict_print_proc proc far
+                xor cx, cx
+                strict_count_loop: 
+                        cmp cx, dx
+                        jge strict_end
+                        mov al, [si]
+                        cmp al, '$'
+                        je strict_end_loop
+                        ;push ax
+                        ;push CX
+                        push dx
+                        MOV AH, 02H
+                        MOV DL, [SI]
+                        INT 21H
+                        pop dx
+                        ;pop ax
+                        ;pop cx
+                        inc cx
+                        inc si 
+                        jmp strict_count_loop 
+
+                strict_end_loop:
+                        CMP CX, DX
+                        JGE strict_end
+                        PUSH CX
+                        PUSH DX
+                        MOV DL, ' '
+                        MOV AH, 02H
+                        INT 21H
+                        POP DX
+                        POP CX
+                        INC CX
+                        JMP strict_end_loop
+                strict_end:
+
+                retf
+                strict_print_proc endp
+
+CopyStr MACRO src, dst, len
+        mov cx, len
+        lea si, src
+        lea di, dst
+
+
+
         ENDM

@@ -5,8 +5,9 @@ LOGIN_ERROR PROC FAR
     Print regiserror1    ; ERROR: 
     Color 4FH, 69
     Print loginerror     ; Password does not match
+    nwln
     Color 10001110B, 14
-    Print regiserror3    ; Continue?
+    Print errcont    ; Continue?
     Color 0FH, 8
     Print yn 
     space 58
@@ -36,19 +37,19 @@ LOG_IN PROC FAR
     nwln 
 
     ; if password does not match
-    CALL LOGIN_ERROR
+    ;CALL LOGIN_ERROR
     ; "refresh" login page
 
     nwln 
-    Color 70H, 80
-    space 80
-    Color 70H, 80
+    Color 0FH, 80
     Print login2        ; Successfully logged in
-    Color 70H, 80
-    space 80 
 
     nwln 
-    Color 10001110B, 80
+    Color 10001110B, 44
     Print login3        ; Continue on user input ENTER
+    MOV ah, 01h
+    INT 21h
+    CALL CLEAR_SCREEN
+    MOV next_screen, 4 ; main menu
 RETF
 LOG_IN ENDP
