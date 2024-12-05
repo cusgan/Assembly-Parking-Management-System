@@ -33,10 +33,27 @@ SLOT_NO PROC FAR
     Color 70H, 34
     CALL SLOTS_NUM
     Print availno
+    LEA SI, hoursdata
+    MOV AX, bufferN2
+    DEC AX
+    ADD SI, AX
+    StrictNum [SI], 9
     RETF
 SLOT_NO ENDP
 
-
+SLOT_OCCUPIED PROC FAR
+    nwln
+    Color 11001110B, 11
+    Print regiserror1    ; ERROR: 
+    Color 4FH, 69
+    Print parkerr    ; occupied
+    nwln
+    Color 10001110B, 31
+    Print continue
+    MOV AH, 01H
+    INT 21H
+RETF
+SLOT_OCCUPIED ENDP
 
 ; slot options
 
@@ -48,18 +65,63 @@ SLOTS_PARK PROC FAR
     Print park1 ; enter slot to park
 
     ; if slot is already occupied, print error message
-    ; press enter to continue -> refresh
-
+    ; then press enter to continue -> refresh
+    
+    InputNum bufferN2
+    MOV AX, bufferN2
+    DEC AX
+    LEA SI, hoursdata
+    ADD SI, AX
+    MOV BL, [SI]
+    CMP BL, 0
+    JE slots_park_free
+        CALL SLOT_OCCUPIED
+        CALL CLEAR_SCREEN
+        MOV next_screen, 5
+        RETF
+    slots_park_free:
     nwln
     Color 0FH, 35
     Print park2 ; enter hrs
+
+    InputNum bufferN
 
     nwln
     nwln
     Color 0FH, 29
     Print park3 ; success
+
+    LEA SI, hoursdata
+    MOV AX, bufferN2
+    DEC AX
+    ADD SI, AX
+    MOV AX, bufferN
+    MOV [SI], AX
+
+    INC unavailvar
+    DEC availvar
+
+    MOV ah, 01h
+    INT 21h
+    CALL CLEAR_SCREEN
+    MOV next_screen, 5 ; refresh slots screen
 RETF
 SLOTS_PARK ENDP  
+
+
+SLOT_EMPTY PROC FAR  
+    nwln
+    Color 11001110B, 11
+    Print regiserror1    ; ERROR: 
+    Color 4FH, 69
+    Print opsloterr    ; occupied
+    nwln
+    Color 10001110B, 31
+    Print continue
+    MOV ah, 01h
+    INT 21h
+RETF 
+SLOT_EMPTY ENDP
 
 ; open slot
 SLOTS_OPEN PROC FAR 
@@ -69,19 +131,55 @@ SLOTS_OPEN PROC FAR
     Print opslot1 ; enter slot to open
 
     ; if slot is already empty, print error message
-    ; press enter to continue -> refresh
+    ; then press enter to continue -> refresh
+    ; call slot_empty
+
+    InputNum bufferN2
+    MOV AX, bufferN2
+    DEC AX
+    LEA SI, hoursdata
+    ADD SI, AX
+    MOV BL, [SI]
+    CMP BL, 0
+    JNE slots_open_valid
+        CALL SLOT_EMPTY
+        CALL CLEAR_SCREEN
+        MOV next_screen, 5
+        RETF
+    slots_open_valid:
 
     nwln
     nwln 
     Color 0FH, 80
     Print opslot2 ; success
 
+    MOV AX, bufferN2
+    DEC AX
+    LEA SI, hoursdata
+    ADD SI, AX
+    MOV BL, [SI]
+    XOR AX, AX
+    MOV AL, 30
+    MUL BX
+    MOV total, AX 
+
     Color 0FH, 80
     Print opslot3 ; display total P
-    StrictNum total, 60
+    StrictNum total, 57
 
-    Color 0EH, 31
+    MOV AX, bufferN2
+    DEC AX
+    LEA SI, hoursdata
+    ADD SI, AX
+    MOV [SI], 0
+
+    DEC unavailvar
+    INC availvar
+
+    Color 10001110B, 31
     Print continue
+    MOV ah, 01h
+    INT 21h
     CALL CLEAR_SCREEN
     MOV next_screen, 5 
 RETF
@@ -89,6 +187,25 @@ SLOTS_OPEN ENDP
 
 ; change slot hours
 SLOT_CHANGE_HRS PROC FAR
+    nwln 
+    nwln
+    Color 0FH, 39
+    Print chngeslt1 ; enter slot no
+    nwln 
+    Color 0FH, 39
+    Print chngeslt2 ; enter new hrs
+    nwln 
+    nwln 
+    Color 0FH, 37
+    Print chngeslt3 ; success
+    Color 10001110B, 31
+    Print continue
+    
+    MOV ah, 01h
+    INT 21h
+    CALL CLEAR_SCREEN
+    MOV next_screen, 5 
+
 
 RETF 
 SLOT_CHANGE_HRS ENDP
@@ -136,8 +253,8 @@ SLOT_AVAILABILITY PROC FAR
         MOV BL, [SI]
         CMP BL, '$'
         JE SLOT_CHECK_ENDL
-        CMP BL, '0'
-        JNE SLOT_CHECK_YES
+        CMP BL, 0
+        JE SLOT_CHECK_YES
             CALL SLOT_NO
         JMP SLOT_CHECK_END
         SLOT_CHECK_YES:
@@ -152,6 +269,7 @@ SLOT_AVAILABILITY PROC FAR
         space 4
         JMP SLOT_CHECK_LOOP
     SLOT_CHECK_ENDL:
+    POP AX
 
     Color 70H, 80 
     space 80
@@ -190,11 +308,6 @@ SLOT_AVAILABILITY PROC FAR
     JMP SLOTS_SCREEN_END
     SLOTS_CHOICE_1: ; park
         CALL SLOTS_PARK 
-        
-        MOV ah, 01h
-        INT 21h
-        CALL CLEAR_SCREEN
-        MOV next_screen, 4 ; refresh slots screen
         JMP SLOTS_SCREEN_END
     SLOTS_CHOICE_2: ; open slot
         CALL SLOTS_OPEN
@@ -215,5 +328,7 @@ SLOT_AVAILABILITY PROC FAR
     xor bx, bx
     xor cx, cx 
     xor dx, dx
+    
+        CALL CLEAR_SCREEN
 RETF
 SLOT_AVAILABILITY ENDP

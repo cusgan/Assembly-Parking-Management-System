@@ -64,7 +64,7 @@ OPENING_SCREEN PROC FAR
         JMP OPENING_SCREEN_END
     OPENING_CHOICE_3:
         CALL CLEAR_SCREEN
-        MOV next_screen, 4 ; main menu
+        MOV next_screen, 0 ; exit
         JMP OPENING_SCREEN_END
     OPENING_SCREEN_END:
 RETF 

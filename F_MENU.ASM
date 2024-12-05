@@ -9,7 +9,7 @@ MAIN_MENU PROC FAR
     Color 70H, 80
     space 80
 
-    Color 11110100B, 80
+    Color 7FH, 80
     Print menu1
 
     Color 70H, 80

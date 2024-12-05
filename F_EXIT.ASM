@@ -14,6 +14,10 @@ EXIT PROC FAR
 
     Color 70H, 80
     space 80
+    Color 70H, 80
+    space 80
+    Color 70H, 80
+    space 80
 
     Color 70H, 80
     Print exit1     ; thank you for using
@@ -26,6 +30,10 @@ EXIT PROC FAR
 	int 21h	 
     space 44
 
+    Color 70H, 80
+    space 80
+    Color 70H, 80
+    space 80
     Color 70H, 80
     space 80
     nwln

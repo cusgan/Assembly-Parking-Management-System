@@ -80,12 +80,13 @@
     avail0      DB ' PARKING FEE: P30 PER HOUR $' ; 27 
     avail1      DB '    No. of Available Parking Slots:     $' ; 38 spaces after number
     avail2      DB '    No. of Unavailable Parking Slots:   $'
-    avail3      DB '    Total No. of Parking Slots:         12                                      $'
+    avail3      DB '    Total No. of Parking Slots:         10                                      $'
     availyes    DB 'Available                  $'
-    availno     DB 'Not Available              $'
-    availvar    DW 6
-    unavailvar  DW 6
-    hoursdata   DB '0101010101$'
+    availno     DB 'Occupied | Hours: $'        
+    availvar    DW 10
+    unavailvar  DW 0
+    hoursorder  DB 0,5,1,6,2,7,3,8,4,9,'$'
+    hoursdata   DB 0,69,0,0,0,0,0,0,0,0,'$'
     hours       DB ' hours of parking.        $'
     num         DB '[ 01 ] $'
     slotmenu1   DB '        [1] Park Car                                                            $'
@@ -99,12 +100,11 @@
     parkerr     DB            'Slot is already occupied!                                            $'
     opslot1     DB '    Enter slot number to open: $' ; 31
     opslot2     DB '    Successfully opened slot!                                                   $' 
-    opslot3     DB '    Your total is: P$' ; 20
-    
+    opslot3     DB '    Slot Parking Fee: P$' ; 23
     opsloterr   DB            'Slot is already empty!                                               $'
-    chngeslt1   DB '    Enter slot number to change hours: $'
-    chngeslt2   DB '    Enter updated number of hours to park: $'
-    chngeslt3   DB '    Successfully changed slot hours! $' ; 37, enter to refresh screen after
+    chngeslt1   DB '    Enter slot number to change hours: $' ; 39
+    chngeslt2   DB '    Enter new number of hours to park: $' ; 39
+    chngeslt3   DB '    Successfully changed slot hours!                                            $' ; 37, enter to refresh screen after
     chngeslterr DB            'Cannot change slot hours!                                            $'
 
     continue    DB '    Press ENTER to continue... $' ; 31
@@ -122,6 +122,7 @@
     buffer3 DB MAX_STR_LEN dup ('$')
     bufferN DW 0
     bufferN2 DW 0
+    
     inbf db  MAX_STR_LEN,?,MAX_STR_LEN dup('$')
     total       DW 0
 

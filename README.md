@@ -7,10 +7,19 @@ Final project for the Computer Organization and Architecture course.
 ## Features
 
 ### 1. Opening Screen
+    ![Opening Screen](/documentation/opening.png "Opening Screen")
+
 ### 2. Register 
+    ![Register](/documentation/register.png "Register User")
+
 ### 3. Log In
+
 ### 4. Main Menu
+    ![Main Menu](/documentation/mainmenu.png "Main Menu")
+
 ### 5. Parking Slot CRUD
 #### Create New Record 
+
 #### Update Existing Record
+
 #### Delete Existing Record
