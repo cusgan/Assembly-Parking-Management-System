@@ -101,7 +101,7 @@
     slotmenu5   DB '        [5] Close Program                                                       $'
     park1       DB '    Enter slot number to park: $' ; 31
     park2       DB '    Enter number of hours to park: $' ; 35
-    park3       DB '    Successfully parked car! $' ; 29, enter to refresh screen after
+    park3       DB '    Successfully parked car!                                                    $' ; 29, enter to refresh screen after
     parkerr     DB            'Parking slot is already occupied!                                    $'
     opslot1     DB '    Enter slot number to open: $' ; 31
     opslot2     DB '    Successfully opened slot!                                                   $' 

@@ -129,6 +129,8 @@ SLOTS_PARK PROC FAR
     INC unavailvar
     DEC availvar
 
+    Color 10001110B, 31
+    Print continue
     MOV ah, 01h
     INT 21h
     CALL CLEAR_SCREEN
