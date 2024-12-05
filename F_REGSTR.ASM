@@ -9,7 +9,20 @@ RETF
 REGISTER_HEADING ENDP
 
 REGISTER_PUT PROC FAR
-    
+    ; LEA SI, uname1
+    ; MOV AX, MAX_STR_LEN
+    ; ADD AX, numfactor
+    ; ADD SI, AX
+    ; CopyStr buffer1, SI, MAX_STR_LEN
+
+    ; LEA SI, pword1
+    ; MOV AX, MAX_STR_LEN
+    ; ADD AX, numfactor
+    ; ADD SI, AX
+    ; CopyStr2 buffer2, SI, MAX_STR_LEN
+    ; ADD numfactor, MAX_STR_LEN
+    CopyStr buffer1, uname1, MAX_STR_LEN
+    CopyStr2 buffer2, pword1, MAX_STR_LEN
 RETF 
 REGISTER_PUT ENDP
 
@@ -33,6 +46,7 @@ RETF
 REGISTER_INVALID_ERROR ENDP
 
 REGISTER_YES_PROC PROC FAR
+    CALL REGISTER_PUT
     nwln
     nwln
 

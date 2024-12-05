@@ -273,10 +273,24 @@ CLEAR_SCREEN ENDP
                 strict_print_proc endp
 
 CopyStr MACRO src, dst, len
-        mov cx, len
-        lea si, src
-        lea di, dst
-
-
-
+        LEA SI, src
+        LEA DI, dst 
+        MOV CX, len
+        copystrloop:
+                mov al, [si]         ; Load the current character from source (SI)
+                mov [di], al         ; Store the character to destination (DI)
+                inc si               ; Move to the next character in the source string
+                inc di               ; Move to the next position in the destination string
+                LOOP copystrloop        ; Repeat the loop        
+        ENDM
+CopyStr2 MACRO src, dst, len
+        LEA SI, src
+        LEA DI, dst 
+        MOV CX, len
+        copystrloop2:
+                mov al, [si]         ; Load the current character from source (SI)
+                mov [di], al         ; Store the character to destination (DI)
+                inc si               ; Move to the next character in the source string
+                inc di               ; Move to the next position in the destination string
+                LOOP copystrloop2       ; Repeat the loop        
         ENDM

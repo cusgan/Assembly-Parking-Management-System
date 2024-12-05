@@ -1,4 +1,21 @@
 ; SEE PARKING SLOT AVAILABILITY
+VALIDATE_INT PROC FAR
+    CMP AX, BX
+    JL invalid_int_case
+    CMP AX, CX
+    JG invalid_int_case
+    MOV AX, 0
+    RETF
+    invalid_int_case:
+        MOV AX, 1
+RETF
+VALIDATE_INT ENDP
+VALIDATE MACRO num, min, max
+    MOV AX, num
+    MOV BX, min
+    MOV CX, max
+    CALL VALIDATE_INT
+    ENDM
 SLOTS_NUM PROC FAR
     PrintChar '['
     PrintChar ' '
@@ -37,7 +54,9 @@ SLOT_NO PROC FAR
     MOV AX, bufferN2
     DEC AX
     ADD SI, AX
-    StrictNum [SI], 9
+    MOV BL, [SI]
+    MOV BH, 0
+    StrictNum BX, 9
     RETF
 SLOT_NO ENDP
 
@@ -68,6 +87,15 @@ SLOTS_PARK PROC FAR
     ; then press enter to continue -> refresh
     
     InputNum bufferN2
+
+    VALIDATE bufferN2, 1, 10
+    CMP AX, 0
+    JE valid_slot_park
+        CALL INVALID_INPUT
+        MOV next_screen, 5
+        CALL CLEAR_SCREEN
+        RETF
+    valid_slot_park:
     MOV AX, bufferN2
     DEC AX
     LEA SI, hoursdata
@@ -96,7 +124,7 @@ SLOTS_PARK PROC FAR
     DEC AX
     ADD SI, AX
     MOV AX, bufferN
-    MOV [SI], AX
+    MOV [SI], AL
 
     INC unavailvar
     DEC availvar
@@ -135,6 +163,14 @@ SLOTS_OPEN PROC FAR
     ; call slot_empty
 
     InputNum bufferN2
+    VALIDATE bufferN2, 1, 10
+    CMP AX, 0
+    JE valid_slot_open
+        CALL INVALID_INPUT
+        MOV next_screen, 5
+        CALL CLEAR_SCREEN
+        RETF
+    valid_slot_open:
     MOV AX, bufferN2
     DEC AX
     LEA SI, hoursdata
@@ -152,7 +188,7 @@ SLOTS_OPEN PROC FAR
     nwln 
     Color 0FH, 80
     Print opslot2 ; success
-
+    
     MOV AX, bufferN2
     DEC AX
     LEA SI, hoursdata
@@ -171,7 +207,8 @@ SLOTS_OPEN PROC FAR
     DEC AX
     LEA SI, hoursdata
     ADD SI, AX
-    MOV [SI], 0
+    MOV AL, 0
+    MOV [SI], AL
 
     DEC unavailvar
     INC availvar
@@ -185,15 +222,76 @@ SLOTS_OPEN PROC FAR
 RETF
 SLOTS_OPEN ENDP 
 
+SLOT_ZER0 PROC FAR  
+    nwln
+    Color 11001110B, 11
+    Print regiserror1    ; ERROR: 
+    Color 4FH, 69
+    Print chngeslterr    ; cannot be zero
+    nwln
+    Color 10001110B, 31
+    Print continue
+    MOV ah, 01h
+    INT 21h
+RETF
+SLOT_ZER0 ENDP
+
 ; change slot hours
 SLOT_CHANGE_HRS PROC FAR
     nwln 
     nwln
     Color 0FH, 39
     Print chngeslt1 ; enter slot no
+
+    InputNum bufferN2
+    VALIDATE bufferN2, 1, 10
+    CMP AX, 0
+    JE valid_slot_change
+        CALL INVALID_INPUT
+        MOV next_screen, 5
+        CALL CLEAR_SCREEN
+        RETF
+    valid_slot_change:
+    LEA SI, hoursdata
+    MOV AX, bufferN2
+    DEC AX
+    ADD SI, AX
+    MOV BL, [SI]
+    MOV BH, 0
+    CMP BL, 0
+    JNE slots_change_occ
+        CALL SLOT_EMPTY
+        CALL CLEAR_SCREEN
+        MOV next_screen, 5
+        RETF
+    slots_change_occ:
+
+    
+
     nwln 
     Color 0FH, 39
     Print chngeslt2 ; enter new hrs
+
+    InputNum bufferN
+
+    MOV BX, bufferN
+    CMP BX, 0
+    JNE slot_change_valid
+        CALL SLOT_ZER0
+        CALL CLEAR_SCREEN
+        MOV next_screen, 5 
+        RETF
+    slot_change_valid:
+
+    LEA SI, hoursdata
+    MOV AX, bufferN2
+    DEC AX
+    ADD SI, AX
+    MOV AX, bufferN
+    MOV [SI], AL
+
+    
+
     nwln 
     nwln 
     Color 0FH, 37

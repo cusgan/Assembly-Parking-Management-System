@@ -45,6 +45,10 @@
     regis8      DB '    Press ENTER to continue to log in... $' ; 41
 
     ; ACCOUNTS
+    numfactor   DW 0
+    curracc     DW 0
+    numacc      DW 0
+
     uname1      DB MAX_STR_LEN dup('$')
     uname2      DB MAX_STR_LEN dup('$')
     uname3      DB MAX_STR_LEN dup('$')
@@ -63,6 +67,7 @@
     regiserror3 DB            'Invalid birth year!                                                  $'
     regiserror4 DB            'Invalid input!                                                       $'
     loginerror  DB            'Invalid username or password!                                        $'
+    loginvalid  DW 0
 
     sublogin    DB '                                     LOG IN                                     $'
     login1      DB '    Please enter the necessary details to log into your account.                $'
@@ -70,7 +75,7 @@
     login3      DB '    Press ENTER to continue to main menu... $' ; 44
 
     submenu     DB '                                   MAIN MENU                                    $'
-    menu1       DB '    Hello, jdelacruz!                                                           $'
+    menu1       DB '    Hello, $'
     menu2       DB '    What would you like to do today?                                            $'
     menu3       DB '        [1] View Parking Slots                                                  $'
     menu4       DB '        [2] Log Out                                                             $'
@@ -86,7 +91,7 @@
     availvar    DW 10
     unavailvar  DW 0
     hoursorder  DB 0,5,1,6,2,7,3,8,4,9,'$'
-    hoursdata   DB 0,69,0,0,0,0,0,0,0,0,'$'
+    hoursdata   DB 0,0,0,0,0,0,0,0,0,0,'$'
     hours       DB ' hours of parking.        $'
     num         DB '[ 01 ] $'
     slotmenu1   DB '        [1] Park Car                                                            $'
@@ -97,15 +102,16 @@
     park1       DB '    Enter slot number to park: $' ; 31
     park2       DB '    Enter number of hours to park: $' ; 35
     park3       DB '    Successfully parked car! $' ; 29, enter to refresh screen after
-    parkerr     DB            'Slot is already occupied!                                            $'
+    parkerr     DB            'Parking slot is already occupied!                                    $'
     opslot1     DB '    Enter slot number to open: $' ; 31
     opslot2     DB '    Successfully opened slot!                                                   $' 
     opslot3     DB '    Slot Parking Fee: P$' ; 23
-    opsloterr   DB            'Slot is already empty!                                               $'
+    opsloterr   DB            'Chosen parking slot is empty!                                        $'
+    inputerr    DB            'Invalid Input !                                                      $'
     chngeslt1   DB '    Enter slot number to change hours: $' ; 39
     chngeslt2   DB '    Enter new number of hours to park: $' ; 39
     chngeslt3   DB '    Successfully changed slot hours!                                            $' ; 37, enter to refresh screen after
-    chngeslterr DB            'Cannot change slot hours!                                            $'
+    chngeslterr DB            'Slot parking hours cannot be zero!                                   $'
 
     continue    DB '    Press ENTER to continue... $' ; 31
     option      DB '    Options:                                                                    $'
@@ -139,6 +145,19 @@ PRINT_CITU PROC FAR
 RETF
 PRINT_CITU ENDP
 
+INVALID_INPUT PROC FAR
+    nwln
+    Color 11001110B, 11
+    Print regiserror1    ; ERROR: 
+    Color 4FH, 69
+    Print inputerr      ; invalid input
+    nwln
+    Color 10001110B, 31
+    Print continue
+    MOV AH, 01H
+    INT 21H
+RETF
+INVALID_INPUT ENDP
 INCLUDE F_EXIT.ASM
 INCLUDE F_LOGIN.ASM         ; LOG_IN
 INCLUDE F_REGSTR.ASM        ; REGISTER
@@ -196,7 +215,6 @@ ROUTER ENDP
 MAIN PROC
     MOV AX, @DATA
     MOV DS, AX
-
     CALL CLEAR_SCREEN
     MOV next_screen, 1
     super_main_loop:

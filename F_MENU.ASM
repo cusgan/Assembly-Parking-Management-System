@@ -1,5 +1,6 @@
 ; 4. MAIN MENU
 MAIN_MENU PROC FAR
+    CALL CLEAR_SCREEN
     CALL PRINT_CITU
     Color 4EH, 80
     Print submenu
@@ -9,8 +10,10 @@ MAIN_MENU PROC FAR
     Color 70H, 80
     space 80
 
-    Color 7FH, 80
+    Color 74H, 80
     Print menu1
+
+    StrictPrint buffer1, 69
 
     Color 70H, 80
     Print menu2
